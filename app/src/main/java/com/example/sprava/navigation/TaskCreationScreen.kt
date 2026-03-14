@@ -1,6 +1,8 @@
 package com.example.sprava.navigation
 
-import DateTask
+
+import com.example.sprava.models.DateTask
+import com.example.sprava.models.Task
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,13 +35,15 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.sprava.database.viewmodels.DateTaskViewModel
+import com.example.sprava.database.viewmodels.TaskViewModel
 import kotlinx.serialization.StringFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskCreationScreen(navController: NavController){
+fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewModel, dateTaskViewModel: DateTaskViewModel){
     val taskName = remember { mutableStateOf("") }
     val taskDescription = remember { mutableStateOf("") }
     val datePickerState = rememberDatePickerState()
@@ -55,7 +59,7 @@ fun TaskCreationScreen(navController: NavController){
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray,
                     titleContentColor = Color.LightGray,),
                 navigationIcon = {
-                    IconButton(onClick = {navController.navigate(Routes.HOME)}) {
+                    IconButton(onClick = {navController.popBackStack();}) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -120,6 +124,12 @@ fun TaskCreationScreen(navController: NavController){
             Text(text = taskName.value, fontSize = 22.sp)
             Text(text = taskDescription.value, fontSize = 22.sp)
             Button(onClick = {
+                println("DEBUG: Кнопка нажата. Имя: ${taskName.value}")
+                if(taskName.value != "" && taskDescription.value != "" && !isDateTask.value)
+                {
+                    taskViewModel.addTask(taskName.value, taskDescription.value)
+                    navController.popBackStack();
+                }
             }) {Text("Ввести дані") }
         }
     }

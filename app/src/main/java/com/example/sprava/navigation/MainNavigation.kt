@@ -3,10 +3,12 @@ package com.example.sprava.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.*
+import com.example.sprava.database.viewmodels.DateTaskViewModel
+import com.example.sprava.database.viewmodels.TaskViewModel
 
 
 @Composable
-fun MainNavigation(){
+fun MainNavigation(taskViewModel: TaskViewModel, dateTaskViewModel: DateTaskViewModel){
     val navController = rememberNavController()
 
     NavHost(
@@ -14,15 +16,15 @@ fun MainNavigation(){
         startDestination = Routes.HOME
     ){
         composable(Routes.HOME){
-            HomeScreen(navController)
+            HomeScreen(navController, taskViewModel, dateTaskViewModel)
         }
 
         composable(Routes.CREATION){
-            TaskCreationScreen(navController)
+            TaskCreationScreen(navController, taskViewModel, dateTaskViewModel)
         }
 
         composable(Routes.SCHEDULE){
-            ScheduleScreen(navController)
+            ScheduleScreen(navController, taskViewModel, dateTaskViewModel)
         }
         composable(Routes.SETTINGS){
             SettingsScreen(navController)
