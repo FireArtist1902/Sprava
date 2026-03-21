@@ -64,8 +64,8 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val timePickerState = rememberTimePickerState(
-        initialHour = calendar.get(Calendar.HOUR_OF_DAY),
-        initialMinute = calendar.get(Calendar.MINUTE),
+        initialHour = 0,
+        initialMinute = 0,
         is24Hour = true
     )
     var showStartTimeDialog by remember { mutableStateOf(false) }

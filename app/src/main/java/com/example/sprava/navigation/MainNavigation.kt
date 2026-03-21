@@ -24,7 +24,7 @@ fun MainNavigation(taskViewModel: TaskViewModel, dateTaskViewModel: DateTaskView
         }
 
         composable(Routes.SCHEDULE){
-            ScheduleScreen(navController, taskViewModel, dateTaskViewModel)
+            ScheduleScreen(navController, dateTaskViewModel)
         }
         composable(Routes.SETTINGS){
             SettingsScreen(navController)
