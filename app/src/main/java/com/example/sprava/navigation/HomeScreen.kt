@@ -1,6 +1,7 @@
 package com.example.sprava.navigation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,6 +23,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -44,11 +46,14 @@ import androidx.navigation.NavController
 import com.example.sprava.database.viewmodels.DateTaskViewModel
 import com.example.sprava.database.viewmodels.TaskViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateTaskViewModel: DateTaskViewModel) {
     val tasks by taskViewModel.tasks.collectAsState()
+    val dateTasks by dateTaskViewModel.dateTasks.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -93,56 +98,117 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
         snackbarHost = { SnackbarHost(snackbarHostState) }
 
     ) { paddingValues ->
-
-        LazyColumn(modifier = Modifier
+        Column(modifier = Modifier
             .padding(paddingValues)
             .padding(10.dp)) {
 
-            items(tasks){ item ->
+            Text("Не датовані завдання:", fontSize = 22.sp)
+            LazyColumn{
+                items(tasks){ item ->
+                    val isDone = remember { mutableStateOf(false) }
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .background(Color.LightGray, shape = RoundedCornerShape(10.dp))
+                                .fillMaxWidth()
+                                .height(40.dp)
+                        ) {
+                            Text(
+                                text = item.text,
+                                fontSize = 22.sp,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(4.dp)
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Checkbox(
+                                checked = isDone.value,
+                                onCheckedChange = {
+                                    scope.launch {
+                                        if (!isDone.value) {
+                                            val result = snackbarHostState.showSnackbar(
+                                                "Видалити завдання?",
+                                                actionLabel = "Видалити",
+                                                withDismissAction = true,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            when (result) {
+                                                SnackbarResult.ActionPerformed -> {
+                                                    taskViewModel.deleteTask(item)
+                                                }
 
-                val isDone = remember { mutableStateOf(false) }
-
-                Row(modifier = Modifier
-                    .background(Color.LightGray, shape = RoundedCornerShape(10.dp))
-                    .fillMaxWidth()
-                    .height(40.dp)){
-
-                    Text(text = item.text,
-                          fontSize = 22.sp,
-                          modifier = Modifier
-                              .fillMaxHeight()
-                              .padding(4.dp))
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Checkbox(
-
-                        checked = isDone.value,
-
-                        onCheckedChange = {
-
-                            scope.launch {
-
-                                if(!isDone.value){
-
-                                    val result = snackbarHostState.showSnackbar(
-                                        "Видалити завдання?",
-                                        actionLabel = "Видалити",
-                                        withDismissAction = true,
-                                        duration = SnackbarDuration.Short
-                                    )
-
-                                    when(result){
-                                        SnackbarResult.ActionPerformed -> {taskViewModel.deleteTask(item)}
-                                        SnackbarResult.Dismissed -> {isDone.value = true}
+                                                SnackbarResult.Dismissed -> {
+                                                    isDone.value = true
+                                                }
+                                            }
+                                        } else {
+                                            isDone.value = !isDone.value
+                                        }
                                     }
-                                }else{
-                                    isDone.value = !isDone.value
                                 }
-                            }
+                            )
                         }
-                    )
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
+            }
 
+            Text("Датовані завдання:", fontSize = 22.sp)
+            LazyColumn {
+                items(dateTasks){item ->
+                    val isDone = remember { mutableStateOf(false) }
+                    var dateText = ""
+                    if(item.startDate!!.time > Date().time)
+                    {
+                        dateText = " Початок: ${item.startDate.date}.${item.startDate.month + 1}.${item.startDate.year}"
+                    } else{
+                        dateText = " Кінець: ${item.endDate!!.date}.${item.endDate.month + 1}.${item.endDate.year}"
+                    }
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .background(Color.LightGray, shape = RoundedCornerShape(10.dp))
+                                .fillMaxWidth()
+                                .height(40.dp)
+                        ) {
+                            Text(
+                                text = item.text,
+                                fontSize = 22.sp,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(4.dp)
+                            )
+                            Text(text = dateText)
+                            Spacer(modifier = Modifier.weight(1f))
+                            Checkbox(
+                                checked = isDone.value,
+                                onCheckedChange = {
+                                    scope.launch {
+                                        if (!isDone.value) {
+                                            val result = snackbarHostState.showSnackbar(
+                                                "Видалити завдання?",
+                                                actionLabel = "Видалити",
+                                                withDismissAction = true,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            when (result) {
+                                                SnackbarResult.ActionPerformed -> {
+                                                    dateTaskViewModel.deleteTask(item)
+                                                }
+                                                SnackbarResult.Dismissed -> {
+                                                    isDone.value = true
+                                                }
+                                            }
+                                        } else {
+                                            isDone.value = !isDone.value
+                                        }
+                                    }
+                                }
+                            )
+
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
                 }
             }
         }
