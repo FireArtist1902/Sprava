@@ -157,12 +157,12 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
                     val isDone = remember { mutableStateOf(false) }
                     val dateText = item.startDate?.let {
                         if(it < LocalDateTime.now()) {
-                            " Початок: ${item.startDate.dayOfMonth}.${item.startDate.monthValue + 1}.${item.startDate.year}"
+                            " Початок: ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
                         } else item.endDate?.let { it1 ->
                             if(it1 > LocalDateTime.now()){
-                                " Кінець: ${item.endDate.dayOfMonth}.${item.endDate.monthValue + 1}.${item.endDate.year}"
+                                " Кінець: ${item.endDate.dayOfMonth}.${item.endDate.monthValue}.${item.endDate.year}"
                             }else{
-                                " Почато: ${item.startDate.dayOfMonth}.${item.startDate.monthValue + 1}.${item.startDate.year}"
+                                " Почато: ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
                             }
                         }
                     }.toString()
