@@ -1,5 +1,7 @@
 package com.example.sprava.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,8 +49,10 @@ import com.example.sprava.database.viewmodels.DateTaskViewModel
 import com.example.sprava.database.viewmodels.TaskViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Date
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateTaskViewModel: DateTaskViewModel) {
@@ -58,7 +62,6 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
     val scope = rememberCoroutineScope()
 
     Scaffold(
-
         topBar = {
         TopAppBar(
             title = {Text("MainScreen", fontSize = 28.sp)},
@@ -66,7 +69,6 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
                 titleContentColor = Color.LightGray)
         )
     },
-
         bottomBar = {
         BottomAppBar(
             containerColor = Color.DarkGray,
@@ -85,18 +87,14 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
             }
         }
     },
-
         floatingActionButton = {
             FloatingActionButton(onClick = { navController.navigate(Routes.CREATION) }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
         },
-
         floatingActionButtonPosition = FabPosition.End,
         containerColor = Color.Gray,
-
         snackbarHost = { SnackbarHost(snackbarHostState) }
-
     ) { paddingValues ->
         Column(modifier = Modifier
             .padding(paddingValues)
@@ -157,13 +155,17 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
             LazyColumn {
                 items(dateTasks){item ->
                     val isDone = remember { mutableStateOf(false) }
-                    var dateText = ""
-                    if(item.startDate!!.time > Date().time)
-                    {
-                        dateText = " Початок: ${item.startDate.date}.${item.startDate.month + 1}.${item.startDate.year}"
-                    } else{
-                        dateText = " Кінець: ${item.endDate!!.date}.${item.endDate.month + 1}.${item.endDate.year}"
-                    }
+                    val dateText = item.startDate?.let {
+                        if(it < LocalDateTime.now()) {
+                            " Початок: ${item.startDate.dayOfMonth}.${item.startDate.monthValue + 1}.${item.startDate.year}"
+                        } else item.endDate?.let { it1 ->
+                            if(it1 > LocalDateTime.now()){
+                                " Кінець: ${item.endDate.dayOfMonth}.${item.endDate.monthValue + 1}.${item.endDate.year}"
+                            }else{
+                                " Почато: ${item.startDate.dayOfMonth}.${item.startDate.monthValue + 1}.${item.startDate.year}"
+                            }
+                        }
+                    }.toString()
                     Column {
                         Row(
                             modifier = Modifier
@@ -205,7 +207,6 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
                                     }
                                 }
                             )
-
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                     }

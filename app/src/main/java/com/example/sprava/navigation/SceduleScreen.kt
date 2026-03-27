@@ -1,10 +1,8 @@
 package com.example.sprava.navigation
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.sprava.database.viewmodels.DateTaskViewModel
-import com.example.sprava.database.viewmodels.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,10 +60,10 @@ fun ScheduleScreen(navController: NavController, dateTaskViewModel: DateTaskView
             }
         },
         containerColor = Color.Gray) {paddingValues ->
-        val daysOfWeek = listOf<String>("Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота", "Неділя")
+        val daysOfWeek = listOf("Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота", "Неділя")
         LazyRow(modifier = Modifier.padding(paddingValues)) {
             items(daysOfWeek){ item->
-                Column(modifier = Modifier.width(140.dp).padding(vertical = 10.dp).padding(horizontal = 5.dp).background(color = Color.LightGray,shape = RoundedCornerShape(10.dp)).padding(10.dp).fillMaxHeight()) {
+                Column(modifier = Modifier.width(140.dp).padding(vertical = 10.dp).padding(horizontal = 5.dp).background(color = Color.LightGray,shape = RoundedCornerShape(10.dp)).padding(10.dp)) {
                     Text(item, fontSize = 22.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.fillMaxWidth().height(1.dp).background(color = Color.Gray, shape = RoundedCornerShape(1.dp)))
                 }

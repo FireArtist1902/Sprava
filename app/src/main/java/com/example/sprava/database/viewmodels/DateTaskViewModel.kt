@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import java.util.Date
 
 class DateTaskViewModel (
@@ -19,7 +20,7 @@ class DateTaskViewModel (
             initialValue = emptyList()
         )
 
-    fun addtask(text: String, description: String, startDate: Date, endDate: Date){
+    fun addtask(text: String, description: String, startDate: LocalDateTime, endDate: LocalDateTime){
         viewModelScope.launch {
             repository.addTask(
                 DateTask(text = text, description = description, startDate = startDate, endDate = endDate)

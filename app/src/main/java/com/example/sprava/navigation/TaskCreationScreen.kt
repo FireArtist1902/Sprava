@@ -1,6 +1,8 @@
 package com.example.sprava.navigation
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import com.example.sprava.models.DateTask
 import com.example.sprava.models.Task
@@ -45,11 +47,16 @@ import com.example.sprava.database.viewmodels.DateTaskViewModel
 import com.example.sprava.database.viewmodels.TaskViewModel
 import kotlinx.serialization.StringFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.util.Calendar
 import java.util.Date
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewModel, dateTaskViewModel: DateTaskViewModel){
@@ -125,10 +132,9 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                             onDismissRequest = {showStartTimeDialog = false},
                             confirmButton = {
                                 TextButton(onClick = {
-                                    val tempDate = Date(startDate.longValue)
-                                    tempDate.hours = timePickerState.hour
-                                    tempDate.minutes = timePickerState.minute
-                                    startDate.longValue = tempDate.time
+                                    var tempDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate.longValue), ZoneOffset.UTC)
+                                    tempDate = tempDate.with(LocalTime.of(timePickerState.hour, timePickerState.minute))
+                                    startDate.longValue = tempDate.toInstant(ZoneOffset.UTC).toEpochMilli()
                                     showStartTimeDialog = false
                                     timePickerState.minute = 0
                                     timePickerState.hour = 0
@@ -148,7 +154,7 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                             confirmButton = {
                                 TextButton(onClick = {
                                     startDate.longValue = datePickerState.selectedDateMillis!!
-                                    if(Date(startDate.longValue) > Date()){
+                                    if(startDate.longValue > LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()){
                                         showStartDateDialog.value = false
                                     }
                                 }) { Text("Ok") }
@@ -170,10 +176,9 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                             onDismissRequest = {showEndTimeDialog = false},
                             confirmButton = {
                                 TextButton(onClick = {
-                                    val tempDate = Date(endDate.longValue)
-                                    tempDate.hours = timePickerState.hour
-                                    tempDate.minutes = timePickerState.minute
-                                    endDate.longValue = tempDate.time
+                                    var tempDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate.longValue), ZoneOffset.UTC)
+                                    tempDate = tempDate.with(LocalTime.of(timePickerState.hour, timePickerState.minute))
+                                    endDate.longValue = tempDate.toInstant(ZoneOffset.UTC).toEpochMilli()
                                     showEndTimeDialog = false
                                 }) {Text("Ok") }
                             },
@@ -192,7 +197,9 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                             confirmButton = {
                                 TextButton(onClick = {
                                     endDate.longValue = datePickerState.selectedDateMillis!!;
-                                    showEndDateDialog.value = false
+                                    if(endDate.longValue > LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()){
+                                        showEndDateDialog.value = false
+                                    }
                                 }) { Text("Ok") }
                             }
                         ) { DatePicker(state = datePickerState) }
@@ -208,7 +215,10 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                     navController.popBackStack();
                 }
                 if(isDateTask.value){
-                    dateTaskViewModel.addtask(taskName.value, taskDescription.value, Date(startDate.longValue), Date(endDate.longValue))
+                    dateTaskViewModel.addtask(taskName.value,
+                        taskDescription.value,
+                        LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate.longValue), ZoneOffset.UTC),
+                        LocalDateTime.ofInstant(Instant.ofEpochMilli(endDate.longValue), ZoneOffset.UTC))
                     navController.popBackStack()
                 }
             }) {Text("Ввести дані") }
