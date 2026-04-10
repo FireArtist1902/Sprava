@@ -28,6 +28,12 @@ class DateTaskViewModel (
         }
     }
 
+    fun updateTask(task: DateTask){
+        viewModelScope.launch {
+            repository.updateTask(task)
+        }
+    }
+
     fun deleteTask(task: DateTask){
         viewModelScope.launch {
             repository.deleteTask(task)

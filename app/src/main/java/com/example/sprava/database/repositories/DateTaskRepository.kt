@@ -12,6 +12,10 @@ class DateTaskRepository (
         dao.insert(task)
     }
 
+    suspend fun updateTask(task: DateTask){
+        dao.update(task)
+    }
+
     suspend fun deleteTask(task: DateTask){
         dao.delete(task)
     }

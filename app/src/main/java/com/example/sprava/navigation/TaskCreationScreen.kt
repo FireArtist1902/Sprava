@@ -48,6 +48,7 @@ import com.example.sprava.database.viewmodels.TaskViewModel
 import kotlinx.serialization.StringFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -78,7 +79,7 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
     var showStartTimeDialog by remember { mutableStateOf(false) }
     var showEndTimeDialog by remember { mutableStateOf(false) }
 
-    startDate.longValue = Date().time
+    startDate.longValue = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
     Scaffold(
         topBar = {
             TopAppBar(
