@@ -13,6 +13,12 @@ interface DateTaskDao {
     @Query("select * from dateTask")
     fun getAllDateTasks(): Flow<List<DateTask>>
 
+    @Query("select * from dateTask where startDate > :currentTime")
+    suspend fun getFutureNotifications(currentTime: Long): List<DateTask>
+
+    @Query("select * from dateTask where text = :name limit 1")
+    suspend fun getTaskByName(name: String): DateTask?
+
     @Update
     suspend fun update(task: DateTask)
 

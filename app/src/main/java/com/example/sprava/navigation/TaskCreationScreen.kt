@@ -1,7 +1,13 @@
 package com.example.sprava.navigation
 
-
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import com.example.sprava.models.DateTask
@@ -30,6 +36,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,12 +46,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.sprava.database.viewmodels.DateTaskViewModel
 import com.example.sprava.database.viewmodels.TaskViewModel
+import com.example.sprava.notification.NotificationReceiver
+import com.example.sprava.notification.NotificationScheduler.schedule
 import kotlinx.serialization.StringFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -78,6 +88,7 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
     )
     var showStartTimeDialog by remember { mutableStateOf(false) }
     var showEndTimeDialog by remember { mutableStateOf(false) }
+    val scheduleContext = LocalContext.current
 
     startDate.longValue = LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()
     Scaffold(
@@ -155,7 +166,7 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                             confirmButton = {
                                 TextButton(onClick = {
                                     startDate.longValue = datePickerState.selectedDateMillis!!
-                                    if(startDate.longValue > LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()){
+                                    if(startDate.longValue >= LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()){
                                         showStartDateDialog.value = false
                                     }
                                 }) { Text("Ok") }
@@ -198,7 +209,7 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                             confirmButton = {
                                 TextButton(onClick = {
                                     endDate.longValue = datePickerState.selectedDateMillis!!;
-                                    if(endDate.longValue > LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()){
+                                    if(endDate.longValue >= LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli()){
                                         showEndDateDialog.value = false
                                     }
                                 }) { Text("Ok") }
@@ -215,13 +226,24 @@ fun TaskCreationScreen(navController: NavController, taskViewModel: TaskViewMode
                     taskViewModel.addTask(taskName.value, taskDescription.value)
                     navController.popBackStack();
                 }
-                if(isDateTask.value){
-                    dateTaskViewModel.addtask(taskName.value,
+                if(isDateTask.value) {
+                    dateTaskViewModel.addtask(
+                        taskName.value,
                         taskDescription.value,
-                        LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate.longValue), ZoneOffset.UTC),
-                        LocalDateTime.ofInstant(Instant.ofEpochMilli(endDate.longValue), ZoneOffset.UTC))
-                    navController.popBackStack()
+                        LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(startDate.longValue),
+                            ZoneOffset.UTC
+                        ),
+                        LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(endDate.longValue),
+                            ZoneOffset.UTC
+                        )
+                    )
+
+                    dateTaskViewModel.scheduleByName(context, taskName.value)
                 }
+
+                navController.popBackStack()
             }) {Text("Ввести дані") }
         }
 

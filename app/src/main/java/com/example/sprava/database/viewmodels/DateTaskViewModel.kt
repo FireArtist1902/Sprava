@@ -1,9 +1,16 @@
 package com.example.sprava.database.viewmodels
 
+import android.app.Application
+import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.AndroidViewModel
 import com.example.sprava.database.repositories.DateTaskRepository
 import com.example.sprava.models.DateTask
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sprava.notification.NotificationScheduler
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -37,6 +44,17 @@ class DateTaskViewModel (
     fun deleteTask(task: DateTask){
         viewModelScope.launch {
             repository.deleteTask(task)
+        }
+    }
+
+    fun scheduleByName(context: Context, name: String){
+        viewModelScope.launch {
+            val task = repository.getTaskByName(name)
+            if(task != null){
+                NotificationScheduler.schedule(context, task)
+            } else{
+                Log.e("DEBUG", "Задача $name не знайдена у базі")
+            }
         }
     }
 }

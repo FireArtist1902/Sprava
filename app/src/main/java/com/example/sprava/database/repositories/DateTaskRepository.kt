@@ -19,4 +19,8 @@ class DateTaskRepository (
     suspend fun deleteTask(task: DateTask){
         dao.delete(task)
     }
+
+    suspend fun  getTaskByName(name: String): DateTask?{
+       return dao.getTaskByName(name)
+    }
 }

@@ -204,7 +204,15 @@ fun EditScreen(taskId: Int?, isDate: Boolean?, navController: NavController, def
                     }
 
                     Button(
-                        onClick = {dateTask.updateTask(DateTask(taskId, newTaskText.value, newTaskDesc.value, newStartDate.value, newEndDate.value)); navController.popBackStack()}
+                        onClick = {dateTask.updateTask(
+                            DateTask(
+                                taskId,
+                                newTaskText.value,
+                                newTaskDesc.value,
+                                newStartDate.value,
+                                newEndDate.value
+                            )
+                        ); navController.popBackStack()}
                     ) { Text("Підтвердити зміни") }
                 }
             }
@@ -212,8 +220,4 @@ fun EditScreen(taskId: Int?, isDate: Boolean?, navController: NavController, def
     } else{
         navController.popBackStack()
     }
-}
-
-fun test(){
-
 }

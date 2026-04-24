@@ -21,13 +21,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val database = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "tasks-db"
-        ).addMigrations(MIGRATION_1_2)
-            .build()
-
+        val database = AppDatabase.getInstance(applicationContext)
         val taskRepository = TaskRepository(database.taskDao())
         val dateTaskRepository = DateTaskRepository(database.dateTaskDao())
 
