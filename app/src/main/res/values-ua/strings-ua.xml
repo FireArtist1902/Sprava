@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Sprava</string>
+    <string name="main_screen">Головний екран</string>
+    <string name="undated_tasks">Недатовані завдання</string>
+    <string name="dated_tasks">Датовані завдання</string>
+    <string name="is_delete">Видалити завдання?</string>
+    <string name="delete">Видалити</string>
+    <string name="start">Початок</string>
+    <string name="end">Кінець</string>
+    <string name="started">Почато</string>
+    <string name="task_name">Назва</string>
+    <string name="task_desc">Опис</string>
+    <string name="enter">Ввести</string>
+    <string name="add_time_boundaries">Додати часові межі</string>
+    <string name="select_start_date">Вибрати дату почвтку завдання</string>
+    <string name="select_start_time">Вибрати час початку завдання</string>
+    <string name="select_end_date">Вибрати дату кінця завдання</string>
+    <string name="select_end_time">Вибрати час кінця завдання</string>
+    <string name="schedule_screen">Календар</string>
+    <string name="monday">Понеділок</string>
+    <string name="tuesday">Вівторок</string>
+    <string name="wednesday">Середа</string>
+    <string name="thursday">Четвер</string>
+    <string name="friday">П\'ятниця</string>
+    <string name="saturday">Субота</string>
+    <string name="sunday">Неділя</string>
+    <string name="notify_about_start">Вібправляти повідомлення про початок завдання за</string>
+    <string name="settings">Налштування</string>
+    <string name="edit_task">Редагувати завдання</string>
+    <string name="task_creation">Створити завдання</string>
+    <string name="ok">Ок</string>
+    <string name="cancel">Відміна</string>
+</resources>

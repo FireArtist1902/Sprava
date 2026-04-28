@@ -57,4 +57,13 @@ class DateTaskViewModel (
             }
         }
     }
+
+    fun scheduleById(context: Context, id: Int){
+        viewModelScope.launch {
+            val task = repository.getTask(id)
+            if(task != null){
+                NotificationScheduler.schedule(context, task)
+            }
+        }
+    }
 }

@@ -3,7 +3,6 @@ package com.example.sprava.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +26,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -45,15 +43,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.sprava.R
 import com.example.sprava.database.viewmodels.DateTaskViewModel
 import com.example.sprava.database.viewmodels.TaskViewModel
+import com.example.sprava.notification.NotificationScheduler
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,11 +63,14 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
     val dateTasks by dateTaskViewModel.dateTasks.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val message = stringResource(R.string.is_delete)
+    val actionLabel = stringResource(R.string.delete)
 
     Scaffold(
         topBar = {
         TopAppBar(
-            title = {Text("MainScreen", fontSize = 28.sp)},
+            title = {Text(stringResource(id = R.string.main_screen), fontSize = 28.sp)},
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray,
                 titleContentColor = Color.LightGray)
         )
@@ -95,7 +98,7 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
         },
-        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButtonPosition = FabPosition.Center,
         containerColor = Color.Gray,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -103,8 +106,8 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
             .padding(paddingValues)
             .padding(10.dp)) {
 
-            Text("Не датовані завдання:", fontSize = 22.sp)
-            LazyColumn{
+            Text(stringResource(id = R.string.undated_tasks) + ":", fontSize = 22.sp)
+            LazyColumn(modifier = Modifier.weight(1f)){
                 items(tasks){ item ->
                     val isDone = remember { mutableStateOf(false) }
                     Column {
@@ -135,8 +138,8 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
                                     scope.launch {
                                         if (!isDone.value) {
                                             val result = snackbarHostState.showSnackbar(
-                                                "Видалити завдання?",
-                                                actionLabel = "Видалити",
+                                                message = message,
+                                                actionLabel = actionLabel,
                                                 withDismissAction = true,
                                                 duration = SnackbarDuration.Short
                                             )
@@ -161,18 +164,18 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
                 }
             }
 
-            Text("Датовані завдання:", fontSize = 22.sp)
-            LazyColumn {
+            Text(stringResource(R.string.dated_tasks) + ":", fontSize = 22.sp)
+            LazyColumn(modifier = Modifier.weight(1f)) {
                 items(dateTasks){item ->
                     val isDone = remember { mutableStateOf(false) }
                     val dateText = item.startDate?.let {
                         if(it < LocalDateTime.now()) {
-                            " Початок: ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
+                            stringResource(R.string.start) + " : ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
                         } else item.endDate?.let { it1 ->
                             if(it1 > LocalDateTime.now()){
-                                " Кінець: ${item.endDate.dayOfMonth}.${item.endDate.monthValue}.${item.endDate.year}"
+                                stringResource(R.string.end) +" : ${item.endDate.dayOfMonth}.${item.endDate.monthValue}.${item.endDate.year}"
                             }else{
-                                " Почато: ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
+                                stringResource(R.string.started) +" : ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
                             }
                         }
                     }.toString()
@@ -205,14 +208,15 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
                                     scope.launch {
                                         if (!isDone.value) {
                                             val result = snackbarHostState.showSnackbar(
-                                                "Видалити завдання?",
-                                                actionLabel = "Видалити",
+                                                message,
+                                                actionLabel = actionLabel,
                                                 withDismissAction = true,
                                                 duration = SnackbarDuration.Short
                                             )
                                             when (result) {
                                                 SnackbarResult.ActionPerformed -> {
                                                     dateTaskViewModel.deleteTask(item)
+                                                    NotificationScheduler.cancel(context, item.id)
                                                 }
                                                 SnackbarResult.Dismissed -> {
                                                     isDone.value = true

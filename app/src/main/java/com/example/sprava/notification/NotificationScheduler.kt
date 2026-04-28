@@ -7,15 +7,16 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.compose.ui.autofill.ContentDataType
 import com.example.sprava.models.DateTask
 import java.time.ZoneId
 
 object NotificationScheduler{
     fun schedule(context: Context, task: DateTask){
+        val prefs = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        val minutes = prefs.getInt("before_notif", 0)
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val timeInMillis = task.startDate!!.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val timeInMillis = task.startDate!!.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() - minutes * 60000
 
         if(timeInMillis <= System.currentTimeMillis()) return
 

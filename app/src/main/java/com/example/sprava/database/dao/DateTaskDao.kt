@@ -19,6 +19,9 @@ interface DateTaskDao {
     @Query("select * from dateTask where text = :name limit 1")
     suspend fun getTaskByName(name: String): DateTask?
 
+    @Query("select * from dateTask where id = :id")
+    suspend fun getTask(id: Int): DateTask?
+
     @Update
     suspend fun update(task: DateTask)
 

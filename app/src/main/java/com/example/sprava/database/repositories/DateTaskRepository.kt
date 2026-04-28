@@ -23,4 +23,8 @@ class DateTaskRepository (
     suspend fun  getTaskByName(name: String): DateTask?{
        return dao.getTaskByName(name)
     }
+
+    suspend fun getTask(id: Int): DateTask?{
+        return dao.getTask(id)
+    }
 }

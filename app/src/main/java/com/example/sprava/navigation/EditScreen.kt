@@ -26,13 +26,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.sprava.R
 import com.example.sprava.database.viewmodels.DateTaskViewModel
 import com.example.sprava.database.viewmodels.TaskViewModel
 import com.example.sprava.models.DateTask
 import com.example.sprava.models.Task
+import com.example.sprava.notification.NotificationScheduler
+import com.example.sprava.notification.NotificationScheduler.schedule
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -45,7 +50,7 @@ fun EditScreen(taskId: Int?, isDate: Boolean?, navController: NavController, def
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = {Text("Edit Task")},
+                    title = {Text(stringResource(R.string.edit_task))},
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.DarkGray,
                         titleContentColor = Color.LightGray),
                     navigationIcon = {
@@ -74,7 +79,7 @@ fun EditScreen(taskId: Int?, isDate: Boolean?, navController: NavController, def
                     )
                     Button(
                         onClick = {defaultTask.updateTask(Task(taskId, newTaskText.value, newTaskDesc.value)); navController.popBackStack()}
-                    ) { Text("Підтвердити зміни") }
+                    ) { Text(stringResource(R.string.enter)) }
                 }
             } else
             {
@@ -93,6 +98,7 @@ fun EditScreen(taskId: Int?, isDate: Boolean?, navController: NavController, def
                     initialMinute = 0,
                     is24Hour = true
                 )
+                val context = LocalContext.current
                 Column(modifier = Modifier.padding(it)) {
                     TextField(
                         value = newTaskText.value,
@@ -212,8 +218,9 @@ fun EditScreen(taskId: Int?, isDate: Boolean?, navController: NavController, def
                                 newStartDate.value,
                                 newEndDate.value
                             )
-                        ); navController.popBackStack()}
-                    ) { Text("Підтвердити зміни") }
+                        );dateTask.scheduleById(context, taskId)
+                            navController.popBackStack()}
+                    ) { Text(stringResource(R.string.enter)) }
                 }
             }
         }

@@ -22,11 +22,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.sprava.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,10 +54,16 @@ fun SettingsScreen(navController: NavController) {
             val prefs = LocalContext.current.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
             val number = remember{ mutableStateOf(prefs.getInt("before_notif", 0).toString()) }
 
-            Text("Повідомляти про початок та кінець завдання за:", fontSize = 22.sp)
+            Text(stringResource(R.string.notify_about_start, number)+":", fontSize = 22.sp)
             TextField(
                 value = number.value,
-                onValueChange = {number.value = it; prefs.edit().putInt("before_notif", number.value.toInt()).apply() },
+                onValueChange = {number.value = it;
+                                    if (number.value != ""){
+                                        prefs.edit().putInt("before_notif", number.value.toInt()).apply()
+                                    } else{
+                                        prefs.edit().putInt("before_notif", 0).apply()
+                                    }
+                                },
                 textStyle = TextStyle(fontSize = 28.sp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )

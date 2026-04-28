@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,10 +31,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.sprava.R
 import com.example.sprava.database.viewmodels.DateTaskViewModel
 import com.example.sprava.models.DateTask
 import java.time.LocalDateTime
@@ -45,7 +48,7 @@ fun ScheduleScreen(navController: NavController, dateTaskViewModel: DateTaskView
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("ScheduleScreen", fontSize = 28.sp) },
+                title = { Text(stringResource(R.string.schedule_screen), fontSize = 28.sp) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.DarkGray,
                     titleContentColor = Color.LightGray
@@ -74,7 +77,13 @@ fun ScheduleScreen(navController: NavController, dateTaskViewModel: DateTaskView
     ) { paddingValues ->
         val dateTasks by dateTaskViewModel.dateTasks.collectAsState()
         val daysOfWeek =
-            listOf("Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота", "Неділя")
+            listOf(stringResource(R.string.monday),
+                stringResource(R.string.tuesday),
+                stringResource(R.string.wednesday),
+                stringResource(R.string.thursday),
+                stringResource(R.string.friday),
+                stringResource(R.string.saturday),
+                stringResource(R.string.sunday))
         val today = LocalDateTime.now()
         val mondayDate = today.minusDays(today.dayOfWeek.value.toLong())
         val sundayDate = today.plusDays((7 - today.dayOfWeek.value).toLong())
@@ -84,11 +93,11 @@ fun ScheduleScreen(navController: NavController, dateTaskViewModel: DateTaskView
             weekTasks.add(Pair(index,dateTasks.filter { dateTask -> dateTask.startDate != null && dateTask.startDate in mondayDate..sundayDate && dateTask.startDate.dayOfWeek.value == index + 1}))
         }
 
-        LazyRow(modifier = Modifier.padding(paddingValues)) {
+        LazyRow(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
             items(daysOfWeek) { item ->
                 Column(
                     modifier = Modifier
-                        .width(140.dp)
+                        .width(145.dp)
                         .padding(vertical = 10.dp)
                         .padding(horizontal = 5.dp)
                         .background(color = Color.LightGray, shape = RoundedCornerShape(10.dp))
