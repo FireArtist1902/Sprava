@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Sprava</string>
+    <string name="main_screen">Main screen</string>
+    <string name="undated_tasks">Undated tasks</string>
+    <string name="dated_tasks">Dated tasks</string>
+    <string name="is_delete">Delete task?</string>
+    <string name="delete">Delete</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="started">Started</string>
+    <string name="task_name">Task name</string>
+    <string name="task_desc">Task description</string>
+    <string name="enter">Enter data</string>
+    <string name="add_time_boundaries">Add time boundaries</string>
+    <string name="select_start_date">Select the task start date</string>
+    <string name="select_start_time">Select the task start time</string>
+    <string name="select_end_date">Select the task end date</string>
+    <string name="select_end_time">Select the task end time</string>
+    <string name="schedule_screen">Schedule screen</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="notify_about_start">Notify about the start of the task in advance</string>
+    <string name="settings">Settings</string>
+    <string name="edit_task">Edit task</string>
+    <string name="task_creation">Task creation</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+</resources>

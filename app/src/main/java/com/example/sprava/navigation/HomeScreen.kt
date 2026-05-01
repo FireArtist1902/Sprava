@@ -168,17 +168,14 @@ fun HomeScreen(navController: NavController, taskViewModel: TaskViewModel, dateT
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(dateTasks){item ->
                     val isDone = remember { mutableStateOf(false) }
-                    val dateText = item.startDate?.let {
-                        if(it < LocalDateTime.now()) {
-                            stringResource(R.string.start) + " : ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
-                        } else item.endDate?.let { it1 ->
-                            if(it1 > LocalDateTime.now()){
-                                stringResource(R.string.end) +" : ${item.endDate.dayOfMonth}.${item.endDate.monthValue}.${item.endDate.year}"
-                            }else{
-                                stringResource(R.string.started) +" : ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
-                            }
-                        }
-                    }.toString()
+                    val dateText = if(item.startDate!! > LocalDateTime.now()){
+                        stringResource(R.string.start) + " : ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
+                    } else if (item.startDate < LocalDateTime.now() && item.endDate!! < item.startDate){
+                        stringResource(R.string.started) +" : ${item.startDate.dayOfMonth}.${item.startDate.monthValue}.${item.startDate.year}"
+                    } else {
+                        stringResource(R.string.end) +" : ${item.endDate!!.dayOfMonth}.${item.endDate.monthValue}.${item.endDate.year}"
+                    }
+
                     Column {
                         Row(
                             modifier = Modifier
